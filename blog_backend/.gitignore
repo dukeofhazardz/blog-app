@@ -1,0 +1,5 @@
+blog_backend/blog_api/__pycache__
+blog_backend/blog_api/migrations/__pycache__
+blog_backend/blog_backend/__pycache__
+blog_backend/user_api/__pycache__
+blog_backend/user_api/migrations/__pycache__
