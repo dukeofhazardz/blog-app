@@ -6,21 +6,16 @@ import api from '../api';
 
 const Home = () => {
   const [ allBlogs, setallBlogs ] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
 
   useEffect(() => {
     // Fetch the current user data
     api.get("/api/user")
-      .then(function(res) {
-        setCurrentUser(res.data);
-      })
       .catch(function(error) {
-        setCurrentUser(null);
         navigate("/login");
       });
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -11,21 +11,16 @@ const CreateBlog = () => {
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState("");
   const [formError, setFormError] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch the current user data
     api.get("/api/user")
-      .then(function(res) {
-        setCurrentUser(res.data);
-      })
       .catch(function(error) {
-        setCurrentUser(null);
         navigate("/login");
       });
-  }, []);
+  }, [navigate]);
 
   function postBlog(e) {
     e.preventDefault();

@@ -8,7 +8,6 @@ import api from '../api';
 
 const Tags = () => {
   const [allTags, setAllTags] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
   const [selectedTag, setSelectedTag] = useState('');
   const [taggedBlogs, setTaggedBlogs] = useState([]);
   const navigate = useNavigate();
@@ -16,14 +15,10 @@ const Tags = () => {
   useEffect(() => {
     // Fetch the current user data
     api.get("/api/user")
-      .then(function(res) {
-        setCurrentUser(res.data);
-      })
       .catch(function(error) {
-        setCurrentUser(null);
         navigate("/login");
       });
-  }, []);
+  }, [navigate]);
 
 	useEffect(() => {
     // Fetch all tags
@@ -83,18 +78,21 @@ const Tags = () => {
       <div className="custom-container">
         <h5>Tagged Blogs</h5>
       </div>
-      <div className="center">
-        {taggedBlogs.map(blog => (
-          <Card key={blog.id} style={{ width: '18rem', margin: '0.5rem' }}>
+      
+      {taggedBlogs.map(blog => (
+        <div className="center">
+          <Card key={blog.id} style={{ width: '60rem' }}>
             <Card.Body>
               <Card.Title>{blog.title}</Card.Title>
+              <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
               <Card.Text>
                 {blog.content}
               </Card.Text>
+              <Card.Link href={`/blog-details/${blog.id}`}>Details</Card.Link>
             </Card.Body>
           </Card>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 };

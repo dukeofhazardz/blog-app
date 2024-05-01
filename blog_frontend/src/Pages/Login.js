@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
 const Login = () => {
-  const [currentUser, setCurrentUser] = useState();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -34,7 +33,6 @@ const Login = () => {
         password: password
       }
     ).then(function(res) {
-      setCurrentUser(res.data);
       setError('');
       navigate("/home", { state: {message: "Login successful"} });
     }).catch(error => {

@@ -9,7 +9,6 @@ import api from '../api';
 const BlogDetails = () => {
   const [blog, setBlog] = useState({});
   const [content, setContent] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentError, setCommentError] = useState('');
   const navigate = useNavigate();
@@ -18,14 +17,10 @@ const BlogDetails = () => {
   useEffect(() => {
     // Fetch the current user data
     api.get("/api/user")
-      .then(function(res) {
-        setCurrentUser(res.data);
-      })
       .catch(function(error) {
-        setCurrentUser(null);
         navigate("/login");
       });
-  }, []);
+  }, [navigate]);
 
 
   useEffect(() => {
@@ -57,7 +52,7 @@ const BlogDetails = () => {
       .catch(function(error) {
         setComments([]);
       });
-  }, []);
+  }, [id]);
 
   function submitComment(e) {
     e.preventDefault();
