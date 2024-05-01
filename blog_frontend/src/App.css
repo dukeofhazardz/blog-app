@@ -7,9 +7,13 @@
 /* boostrap form style */
 .custom-container h5 {
   margin-top: 20px !important;
-  margin-left: 20px !important; /* Adjust the value as needed */
+  margin-left: 20px !important;
 }
 
+.button-container {
+  display: flex;
+  gap: 10px;
+}
 
 .center {
     display: flex;

@@ -39,25 +39,34 @@ const Tags = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Fetch blogs based on selected tag
-    if (selectedTag) {
-      api.get(`/api/tag/${selectedTag}`)
-        .then(function(res) {
-          setTaggedBlogs(res.data);
-        })
-        .catch(function(error) {
-          console.error("Error fetching blogs based on tag:", error);
-          setTaggedBlogs([]);
-        });
-    } else {
-      setTaggedBlogs([]);
-    }
+    const fetchData = async () => {
+      try {
+        const blogsResponse = await api.get(`/api/tag/${selectedTag}`);
+        const blogs = blogsResponse.data.reverse();
+  
+        const blogsWithData = await Promise.all(
+          blogs.map(async (blog) => {
+            const userResponse = await api.get(`/api/user/${blog.author}`);
+            const user = userResponse.data.user;
+            return { ...blog, user };
+          })
+        );
+  
+        setTaggedBlogs(blogsWithData);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        setTaggedBlogs([]);
+      }
+    };
+  
+    fetchData();
   };
 
   return (
     <div>
       <MyNav />
       <div className="custom-container">
-        <h5>Select Tag</h5>
+        <h5>Filter blogs by Tag</h5>
       </div>
       <div className="center">
         <Form onSubmit={handleSubmit}>
@@ -76,23 +85,38 @@ const Tags = () => {
         </Form>
       </div>
       <div className="custom-container">
-        <h5>Tagged Blogs</h5>
+        <h5>Blogs Tagged #{selectedTag}</h5>
       </div>
       
-      {taggedBlogs.map(blog => (
-        <div className="center">
-          <Card key={blog.id} style={{ width: '60rem' }}>
-            <Card.Body>
-              <Card.Title>{blog.title}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
-              <Card.Text>
-                {blog.content}
-              </Card.Text>
-              <Card.Link href={`/blog-details/${blog.id}`}>Details</Card.Link>
-            </Card.Body>
-          </Card>
-        </div>
-      ))}
+      <div className="custom-container">
+        {taggedBlogs ? (
+          <ul>
+            {taggedBlogs.map(blog => (
+              <div className='center' key={blog.id}>
+                <Card style={{ width: '60rem' }}>
+                  <Card.Body>
+                    {blog.user ? (
+                      <>
+                        <Card.Title>{blog.user.first_name} {blog.user.last_name}</Card.Title>
+                      </>
+                    ) : (
+                      <Card.Title>Loading user...</Card.Title>
+                    )}
+                    <Card.Title>{blog.title}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
+                    <Card.Text>
+                      {blog.content}
+                    </Card.Text>
+                    <Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
+          </ul>
+        ) : (
+          <p>No blogs found.</p>
+        )}
+      </div>
     </div>
   );
 };

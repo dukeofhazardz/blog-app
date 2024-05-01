@@ -16,7 +16,7 @@ const MyNav = () => {
   useEffect(() => {
     api.get("/api/user")
     .then(function(res) {
-      setCurrentUser(res.data);
+      setCurrentUser(res.data.user);
     })
     .catch(function(error) {
       setCurrentUser(null);
@@ -45,29 +45,36 @@ const MyNav = () => {
           </Nav>
           {currentUser ? (
             <Navbar.Collapse className="justify-content-end">
-              <Navbar.Text>
-                <Link to="/tags">
-                  <Button id="form_btn" variant="light">Tags</Button>
-                </Link>
-              </Navbar.Text>
-              <Navbar.Text>
-                <Link to="/categories">
-                  <Button id="form_btn" variant="light">Categories</Button>
-                </Link>
-              </Navbar.Text>
-              <Navbar.Text>
-                <Link to="/create-blog">
-                  <Button id="form_btn" variant="light">Create Blog</Button>
-                </Link>
-              </Navbar.Text>
-              <Navbar.Text>
-                <form onSubmit={e => submitLogout(e)}>
-                  <Button type="submit" variant="light">Log out</Button>
-                </form>
-              </Navbar.Text>
-              <Navbar.Text>
-                Signed in as: {currentUser.user.first_name} {currentUser.user.last_name}
-              </Navbar.Text>
+              <div className='button-container'>
+                <Navbar.Text>
+                  <Link to="/profile">
+                    <Button id="form_btn" variant="light">Profile</Button>
+                  </Link>
+                </Navbar.Text>
+                <Navbar.Text>
+                  <Link to="/tags">
+                    <Button id="form_btn" variant="light">Tags</Button>
+                  </Link>
+                </Navbar.Text>
+                <Navbar.Text>
+                  <Link to="/categories">
+                    <Button id="form_btn" variant="light">Categories</Button>
+                  </Link>
+                </Navbar.Text>
+                <Navbar.Text>
+                  <Link to="/create-blog">
+                    <Button id="form_btn" variant="light">Create Blog</Button>
+                  </Link>
+                </Navbar.Text>
+                <Navbar.Text>
+                  <form onSubmit={e => submitLogout(e)}>
+                    <Button type="submit" variant="light">Log out</Button>
+                  </form>
+                </Navbar.Text>
+                <Navbar.Text>
+                  Signed in as: {currentUser.first_name} {currentUser.last_name}
+                </Navbar.Text>
+              </div>
             </Navbar.Collapse>
           ) : (
             <Navbar.Collapse className="justify-content-end">

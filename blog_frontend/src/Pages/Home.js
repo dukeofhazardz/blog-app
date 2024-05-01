@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 import api from '../api';
 
 const Home = () => {
@@ -21,12 +22,12 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const blogsResponse = await api.get("/api/blog");
-        const blogs = blogsResponse.data;
+        const blogs = blogsResponse.data.reverse();
   
         const blogsWithData = await Promise.all(
           blogs.map(async (blog) => {
             const userResponse = await api.get(`/api/user/${blog.author}`);
-            const user = userResponse.data;
+            const user = userResponse.data.user;
             return { ...blog, user };
           })
         );
@@ -54,7 +55,7 @@ const Home = () => {
                   <Card.Body>
                     {blog.user ? (
                       <>
-                        <Card.Title>{blog.user.user.first_name} {blog.user.user.last_name}</Card.Title>
+                        <Card.Title>{blog.user.first_name} {blog.user.last_name}</Card.Title>
                       </>
                     ) : (
                       <Card.Title>Loading user...</Card.Title>
@@ -64,7 +65,7 @@ const Home = () => {
                     <Card.Text>
                       {blog.content}
                     </Card.Text>
-                    <Card.Link href={`/blog-details/${blog.id}`}>Details</Card.Link>
+                    <Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>
                   </Card.Body>
                 </Card>
               </div>

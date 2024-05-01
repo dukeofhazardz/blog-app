@@ -18,7 +18,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class CreateUpdateBlog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_object(self, pk=None):
         if pk is not None:
@@ -39,7 +39,7 @@ class CreateUpdateBlog(APIView):
 
     def put(self, request, pk):
         blog = self.get_object(pk)
-        serializer = CreateUpdateBlogSerializer(blog, data=request.data, context={'request': request})
+        serializer = CreateUpdateBlogSerializer(blog, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -162,3 +162,17 @@ class GetBlogsByTag(generics.ListAPIView):
             return Blog.objects.filter(tags__name=tag_name)
         except Blog.DoesNotExist:
             raise NotFound("Tag does not exist.")
+        
+
+class GetBlogsByAuthor(generics.ListAPIView):
+    serializer_class = BlogSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def get_queryset(self):
+        author_id = self.kwargs.get('author_id')
+        try:
+            # Assuming author ID is unique
+            return Blog.objects.filter(author__id=author_id)
+        except Blog.DoesNotExist:
+            raise NotFound("Author does not exist.")

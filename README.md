@@ -30,6 +30,6 @@ To run this application locally, follow these steps:
 
 ## Usage
 
-- After starting both the backend and frontend servers, open your web browser and navigate to `http://127.0.0.1:3000` to access the application.
+- After starting both the backend and frontend servers, open your web browser and navigate to `http://127.0.0.1:3000` to access the application. __make sure to use `http://127.0.0.1:3000` not `http://localhost:3000`__
 - Register for a new account or log in with existing credentials.
 - Explore existing blog posts, create new ones, edit or delete your own posts, and engage with other users' content.

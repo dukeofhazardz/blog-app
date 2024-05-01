@@ -39,18 +39,27 @@ const Category = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Fetch blogs based on selected category
-    if (selectedCategory) {
-      api.get(`/api/category/${selectedCategory}`)
-        .then(function(res) {
-          setCategorizedBlogs(res.data);
-        })
-        .catch(function(error) {
-          console.error("Error fetching blogs based on category:", error);
-          setCategorizedBlogs([]);
-        });
-    } else {
-      setCategorizedBlogs([]);
-    }
+    const fetchData = async () => {
+      try {
+        const blogsResponse = await api.get(`/api/category/${selectedCategory}`);
+        const blogs = blogsResponse.data.reverse();
+  
+        const blogsWithData = await Promise.all(
+          blogs.map(async (blog) => {
+            const userResponse = await api.get(`/api/user/${blog.author}`);
+            const user = userResponse.data.user;
+            return { ...blog, user };
+          })
+        );
+  
+        setCategorizedBlogs(blogsWithData);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        setCategorizedBlogs([]);
+      }
+    };
+  
+    fetchData();
   };
 
   return (
@@ -76,23 +85,38 @@ const Category = () => {
         </Form>
       </div>
       <div className="custom-container">
-        <h5>Categorized Blogs</h5>
+        <h5>Blogs Categorized by {selectedCategory}</h5>
       </div>
 
-      {categorizedBlogs.map(blog => (
-        <div className="center">
-          <Card key={blog.id} style={{ width: '60rem' }}>
-          <Card.Body>
-              <Card.Title>{blog.title}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
-              <Card.Text>
-                {blog.content}
-              </Card.Text>
-              <Card.Link href={`/blog-details/${blog.id}`}>Details</Card.Link>
-            </Card.Body>
-          </Card>
-        </div>
-      ))}
+      <div className="custom-container">
+        {categorizedBlogs ? (
+          <ul>
+            {categorizedBlogs.map(blog => (
+              <div className='center' key={blog.id}>
+                <Card style={{ width: '60rem' }}>
+                  <Card.Body>
+                    {blog.user ? (
+                      <>
+                        <Card.Title>{blog.user.first_name} {blog.user.last_name}</Card.Title>
+                      </>
+                    ) : (
+                      <Card.Title>Loading user...</Card.Title>
+                    )}
+                    <Card.Title>{blog.title}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
+                    <Card.Text>
+                      {blog.content}
+                    </Card.Text>
+                    <Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
+          </ul>
+        ) : (
+          <p>No blogs found.</p>
+        )}
+      </div>
     </div>
   );
 };
