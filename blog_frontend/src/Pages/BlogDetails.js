@@ -5,7 +5,6 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import api from '../api';
-import Cookies from 'js-cookie';
 
 const BlogDetails = () => {
   const [blog, setBlog] = useState({});
@@ -69,20 +68,11 @@ const BlogDetails = () => {
       return;
     }
 
-    console.log('CSRF Token:', Cookies.get('csrftoken'));
-    const config = {
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-CSRFToken': Cookies.get('csrftoken')
-      }
-    };
-
     api.post(
       `/api/comment/${id}/`,
       {
         content: content
-      }, config,
+      },
     ).then(() => setCommentError('')).catch(error => {
       console.error('Error processing comment', error);
     });

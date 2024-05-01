@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import api from '../api';
-import Cookies from 'js-cookie';
 
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
@@ -44,11 +43,11 @@ const CreateBlog = () => {
         content: content,
         category: category,
         tags: tags
-      }, { withCredentials: true, withXSRFToken: true, headers: { 'X-CSRFToken': Cookies.get('csrftoken') }},
+      }
     ).then(() => {
       setFormError('');
     }).catch(error => {
-      console.error('Error processing comment', error);
+      console.error('Error processing content', error);
     });
   }
 

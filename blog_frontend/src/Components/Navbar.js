@@ -6,11 +6,13 @@ import Navbar from 'react-bootstrap/Navbar';
 import Button from "react-bootstrap/Button";
 import { Link } from 'react-router-dom';
 import Form from "react-bootstrap/Form";
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 const MyNav = () => {
   const [currentUser, setCurrentUser] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/api/user")
@@ -26,9 +28,9 @@ const MyNav = () => {
     e.preventDefault();
     api.post(
       "/api/logout",
-      {withCredentials: true}
     ).then(function(res) {
       setCurrentUser(false);
+      navigate("/login", { state: {message: "Logout successful"} });
     });
   }
   
