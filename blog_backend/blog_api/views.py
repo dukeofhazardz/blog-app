@@ -7,7 +7,13 @@ from django.http import Http404
 from .serializers import CreateUpdateBlogSerializer, BlogSerializer, CreateCommentSerializer, TagSerializer, CategorySerializer, CommentSerializer
 from rest_framework import permissions, status
 from .models import Blog, Category, Tag, Comment
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return
 
 
 class CreateUpdateBlog(APIView):
@@ -42,7 +48,7 @@ class CreateUpdateBlog(APIView):
 
 class DeleteBlog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_object(self, pk):
         try:
@@ -57,7 +63,8 @@ class DeleteBlog(APIView):
 
 class CreateComment(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = CommentSerializer
 
     def get_object(self, pk=None):
         if pk is not None:
