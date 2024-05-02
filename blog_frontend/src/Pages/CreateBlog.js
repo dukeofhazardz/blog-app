@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
+import Alert from 'react-bootstrap/Alert';
+import moment from 'moment';
 import api from '../api';
 
 const CreateBlog = () => {
@@ -11,7 +13,8 @@ const CreateBlog = () => {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState("");
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
+  const [message, setMessage] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [userBlogs, setUserBlogs] = useState([]);
 
@@ -38,6 +41,7 @@ const CreateBlog = () => {
 
   function postBlog(e) {
     e.preventDefault();
+    setMessage("")
 
      // Basic validation
      if (!title.trim() || !content.trim() || !category.trim()) {
@@ -54,7 +58,12 @@ const CreateBlog = () => {
         tags: tags
       }
     ).then(() => {
-      setFormError('');
+      setFormError("");
+      setTitle("");
+      setContent("");
+      setCategory("");
+      setTags("");
+      setMessage('Blogpost created successfully')
       api.get(`/api/blogs/author/${currentUser.id}`)
         .then(function(res) {
           // Reverse the order of blogs to get the most recent first
@@ -92,7 +101,7 @@ const CreateBlog = () => {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicContent">
             <Form.Label>Content</Form.Label>
-            <Form.Control size="lg" type="text" placeholder="Enter Content here" value={content} onChange={e => setContent(e.target.value)} />
+            <Form.Control as="textarea" rows={3} size="lg" type="text" placeholder="Enter Content here" value={content} onChange={e => setContent(e.target.value)} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicCategory">
             <Form.Label>Category</Form.Label>
@@ -102,8 +111,10 @@ const CreateBlog = () => {
             <Form.Label>Tags</Form.Label>
             <Form.Control type="text" placeholder="(e.g #code #life)" value={tags} onChange={e => setTags(e.target.value)} />
           </Form.Group>
-          {formError && <p className="text-danger">{formError}</p>}
-          <Button variant="primary" type="submit">
+          {formError && <Alert key='danger' variant='danger'>{formError}</Alert>}
+          {message && <Alert key='success' variant='success'>{message}</Alert>}
+
+          <Button variant="outline-info" type="submit">
             Submit
           </Button>
         </Form>
@@ -111,36 +122,40 @@ const CreateBlog = () => {
       {/* Display user blogs */}
       <div className="custom-container">
         <h5>Your Blogs</h5>
-        {userBlogs ? (
+        {userBlogs.length > 0 ? (
           <ul>
             {userBlogs.map(blog => (
               <div className='center' key={blog.id}>
-                <Card style={{ width: '60rem' }}>
+                <Card style={{ width: '60rem' }} border='info' className='text-center'>
+                  {currentUser ? (
+                    <>
+                      <Card.Header><strong>{currentUser.first_name} {currentUser.last_name}</strong></Card.Header>
+                    </>
+                  ) : (
+                    <Card.Header>Loading user...</Card.Header>
+                  )}
                   <Card.Body>
-                    {currentUser ? (
-                      <>
-                        <Card.Title>{currentUser.first_name} {currentUser.last_name}</Card.Title>
-                      </>
-                    ) : (
-                      <Card.Title>Loading user...</Card.Title>
-                    )}
                     <Card.Title>{blog.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
                     <Card.Text>
                       {blog.content}
                     </Card.Text>
                     <div className="button-container">
-											<Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>    
-											<Button variant="primary" href={`/update-blog/${blog.id}`}>Update Blog</Button>
+											<Button variant="info" href={`/blog-details/${blog.id}`}>Details</Button>    
+											<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
 											<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
 										</div>
                   </Card.Body>
+                  <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
                 </Card>
               </div>
             ))}
           </ul>
         ) : (
-          <p>Your blogs will appear here.</p>
+          <div className='center'>
+            <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+              <Card.Body>Blogs will appear here.</Card.Body>
+            </Card>
+          </div>
         )}
       </div>
     </div>

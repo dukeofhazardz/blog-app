@@ -3,6 +3,8 @@ import MyNav from '../Components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from "react-bootstrap/Button";
+import Badge from 'react-bootstrap/Badge';
+import moment from "moment";
 import api from '../api';
 
 const Profile = () => {
@@ -43,16 +45,17 @@ const Profile = () => {
 		<div>
 			<MyNav />
 				{/* Display user details */}
-			<div className="custom-container">
+			<div className="center profile">
 					{currentUser && (
-					<Card style={{ width: '60rem' }}>
+					<Card style={{ width: '60rem' }} border='warning' className='text-center'>
+							<Card.Header as="h4">Profile</Card.Header>
 							<Card.Body>
 							<Card.Title>{currentUser.first_name} {currentUser.last_name}</Card.Title>
-							<Card.Title>EMAIL: {currentUser.email}</Card.Title>
-							<Card.Title>Username: @{currentUser.username}</Card.Title>
-							<div className='button-container'>
-								<Button variant="primary" href={'/create-blog'}>Create Blogpost</Button>
-								<Button variant="danger" href={'/reset-password'}>Reset Password</Button>
+							<Card.Title><Badge bg="dark" text="light">@{currentUser.username}</Badge></Card.Title>
+							<Card.Title>📧 <Badge bg="info">{currentUser.email}</Badge></Card.Title>
+							<div className='button-container profile'>
+								<Button variant="warning" href={'/create-blog'}>Create Blogpost</Button>
+								<Button variant="outline-danger" href={'/reset-password'}>Reset Password</Button>
 							</div>
 							</Card.Body>
 					</Card>
@@ -62,36 +65,40 @@ const Profile = () => {
 			{/* Display user blogs */}
 			<div className="custom-container">
 				<h5>Your Blogs</h5>
-				{userBlogs ? (
+				{userBlogs.length > 0 ? (
 					<ul>
 						{userBlogs.map(blog => (
 							<div className='center' key={blog.id}>
-								<Card style={{ width: '60rem' }}>
+								<Card style={{ width: '60rem' }} border='info' className='text-center'>
+									{currentUser ? (
+										<>
+											<Card.Header><strong>{currentUser.first_name} {currentUser.last_name}</strong></Card.Header>
+										</>
+									) : (
+										<Card.Header>Loading user...</Card.Header>
+									)}
 									<Card.Body>
-										{currentUser ? (
-											<>
-												<Card.Title>{currentUser.first_name} {currentUser.last_name}</Card.Title>
-											</>
-										) : (
-											<Card.Title>Loading user...</Card.Title>
-										)}
 										<Card.Title>{blog.title}</Card.Title>
-										<Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
 										<Card.Text>
 											{blog.content}
 										</Card.Text>
 										<div className="button-container">
-											<Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>    
-											<Button variant="primary" href={`/update-blog/${blog.id}`}>Update Blog</Button>
+											<Button variant="info" href={`/blog-details/${blog.id}`}>Details</Button>    
+											<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
 											<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
 										</div>
 									</Card.Body>
+									<Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
 								</Card>
 							</div>
 						))}
 					</ul>
 				) : (
-					<p>Your blogs will appear here.</p>
+					<div className='center'>
+						<Card style={{ width: '60rem' }} border='warning' className='text-center'>
+							<Card.Body>Your blogs will appear here.</Card.Body>
+						</Card>
+					</div>
 				)}
 			</div>
 		</div>

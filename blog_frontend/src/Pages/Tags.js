@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
+import moment from 'moment';
 import api from '../api';
 
 const Tags = () => {
@@ -79,13 +81,13 @@ const Tags = () => {
               ))}
             </Form.Select>
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button className="mt-3" variant="outline-info" type="submit">
             Submit
           </Button>
         </Form>
       </div>
       <div className="custom-container">
-        <h5>Blogs Tagged #{selectedTag}</h5>
+        <h5>Blogs Tagged &nbsp;<Badge bg="secondary">#{selectedTag}</Badge></h5>
       </div>
       
       <div className="custom-container">
@@ -93,22 +95,23 @@ const Tags = () => {
           <ul>
             {taggedBlogs.map(blog => (
               <div className='center' key={blog.id}>
-                <Card style={{ width: '60rem' }}>
+                <Card style={{ width: '60rem' }} border='info' className='text-center'>
+                  {blog.user ? (
+                    <>
+                      <Card.Header><strong>{blog.user.first_name} {blog.user.last_name}</strong></Card.Header>
+                    </>
+                  ) : (
+                    <Card.Header>Loading user...</Card.Header>
+                  )}
                   <Card.Body>
-                    {blog.user ? (
-                      <>
-                        <Card.Title>{blog.user.first_name} {blog.user.last_name}</Card.Title>
-                      </>
-                    ) : (
-                      <Card.Title>Loading user...</Card.Title>
-                    )}
                     <Card.Title>{blog.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
+                    <Card.Subtitle className="mb-2 text-muted">#{selectedTag}</Card.Subtitle>
                     <Card.Text>
                       {blog.content}
                     </Card.Text>
-                    <Button variant="primary" href={`/blog-details/${blog.id}`}>Details</Button>
+                    <Button variant="outline-dark" href={`/blog-details/${blog.id}`}>Details</Button>
                   </Card.Body>
+                  <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
                 </Card>
               </div>
             ))}

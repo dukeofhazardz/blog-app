@@ -28,7 +28,7 @@ const MyNav = () => {
     api.post(
       "/api/logout",
     ).then(function(res) {
-      setCurrentUser(false);
+      setCurrentUser(null);
       navigate("/login", { state: {message: "Logout successful"} });
     });
   }
@@ -78,16 +78,18 @@ const MyNav = () => {
             </Navbar.Collapse>
           ) : (
             <Navbar.Collapse className="justify-content-end">
-              <Navbar.Text>
-                <Link to="/register">
-                  <Button id="form_btn" variant="light">Register</Button>
-                </Link>
-              </Navbar.Text>
-              <Navbar.Text>
-                <Link to="/login">
-                  <Button id="form_btn" variant="light">Login</Button>
-                </Link>
-              </Navbar.Text>
+              <div className='button-container'>
+                <Navbar.Text>
+                  <Link to="/register">
+                    <Button id="form_btn" variant="light">Register</Button>
+                  </Link>
+                </Navbar.Text>
+                <Navbar.Text>
+                  <Link to="/login">
+                    <Button id="form_btn" variant="light">Login</Button>
+                  </Link>
+                </Navbar.Text>
+              </div>
             </Navbar.Collapse>
           )}
         </Navbar.Collapse>

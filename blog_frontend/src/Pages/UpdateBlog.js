@@ -3,6 +3,7 @@ import MyNav from '../Components/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import api from '../api';
 
 const UpdateBlog = () => {
@@ -39,7 +40,9 @@ const UpdateBlog = () => {
         }
       ).then(() => {
         setMessage('Blogpost updated')
-        setFormError('');
+        setFormError("");
+        setTitle("");
+        setContent("");
         navigate("/profile");
       }).catch(error => {
         console.error('Error processing content', error);
@@ -60,11 +63,11 @@ const UpdateBlog = () => {
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicContent">
               <Form.Label>Update Content</Form.Label>
-              <Form.Control size="lg" type="text" placeholder="Enter new Content here" value={content} onChange={e => setContent(e.target.value)} />
+              <Form.Control as="textarea" rows={3} size="lg" type="text" placeholder="Enter new Content here" value={content} onChange={e => setContent(e.target.value)} />
             </Form.Group>
-            {formError && <p className="text-danger">{formError}</p>}
-						{message && <p className="text-success">{message}</p>}
-            <Button variant="primary" type="submit">
+            {formError && <Alert key='danger' variant='danger'>{formError}</Alert>}
+            {message && <Alert key='success' variant='success'>{message}</Alert>}
+            <Button variant="outline-primary" type="submit">
               Submit
             </Button>
           </Form>

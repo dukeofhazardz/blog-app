@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import MyNav from '../Components/Navbar';
+import Alert from 'react-bootstrap/Alert';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
 const ResetPassword = () => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+		// Fetch the current user data
+		api.get("/api/user")
+			.then(function(res) {
+        setCurrentUser(res.data.user)
+			})
+			.catch(function(error) {
+				navigate("/login");
+			});
+	}, [navigate]);
 
   function submitLogin(e) {
     e.preventDefault();
@@ -32,16 +45,19 @@ const ResetPassword = () => {
       return;
     }
 
-    api.post(
-      "/api/login",
+    api.put(
+      `/api/reset-password/${currentUser.id}/`,
       {
-        password1: password1,
-        password2: password2
+        password: password1
       }
     ).then(function(res) {
       setMessage('Password reset successfully')
-      setError('');
-      navigate("/profile", { state: {message: "Password reset successful"} });
+      api.post(
+        "/api/logout",
+      ).then(function(res) {
+        setCurrentUser(null);
+        navigate("/login", { state: {message: "Logout successful"} });
+      });
     }).catch(error => {
       setError('Invalid password');
       console.error('Password Reset Failed', error);
@@ -65,9 +81,9 @@ const ResetPassword = () => {
             <Form.Label>Password again</Form.Label>
             <Form.Control type="password" placeholder="Enter new password again" value={password2} onChange={e => setPassword2(e.target.value)} />
           </Form.Group>
-          {message && <p className="text-success">{message}</p>}
-          {error && <p className="text-danger">{error}</p>}
-          <Button variant="primary" type="submit">
+          {error && <Alert key='danger' variant='danger'>{error}</Alert>}
+          {message && <Alert key='success' variant='success'>{message}</Alert>}
+          <Button variant="outline-primary" type="submit">
             Submit
           </Button>
         </Form>

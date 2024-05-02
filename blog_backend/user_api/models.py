@@ -34,7 +34,7 @@ class AppUserManager(BaseUserManager):
 
 class BaseModel(models.Model):
     id = models.AutoField(primary_key=True)
-    created_at = models.DateField(auto_now_add=True, null=False)
+    created_at = models.DateTimeField(auto_now=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
     class Meta:

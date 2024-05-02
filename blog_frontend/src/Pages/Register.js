@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import MyNav from '../Components/Navbar';
+import Alert from 'react-bootstrap/Alert';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
@@ -47,7 +48,12 @@ const Register = () => {
     ).then(() => {
       navigate('/login');
     }).catch(error => {
-      console.error('Registration failed:', error);
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setUsername('');
+      setPassword('');
+      setError('Registration failed');
     });
   }
 
@@ -82,7 +88,7 @@ const Register = () => {
             <Form.Label>Password</Form.Label>
             <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
           </Form.Group>
-          {error && <p className="text-danger">{error}</p>}
+          {error && <Alert key='danger' variant='danger'>{error}</Alert>}
           <Button variant="primary" type="submit">
             Submit
           </Button>

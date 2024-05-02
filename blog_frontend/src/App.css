@@ -8,11 +8,14 @@
 .custom-container h5 {
   margin-top: 20px !important;
   margin-left: 20px !important;
+  display: flex;
+  justify-content: center;
 }
 
 .button-container {
   display: flex;
-  gap: 10px;
+  gap: 20px;
+  justify-content: center;
 }
 
 .center {
@@ -21,4 +24,13 @@
     align-items: center;
     margin-top: 5%;
     margin-bottom: 5%;
+}
+
+.center.profile {
+  margin-top: 0.5rem;
+  margin-left: 1.7rem;
+}
+
+.button-container.profile {
+  justify-content: center;
 }

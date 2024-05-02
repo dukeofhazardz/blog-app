@@ -1,12 +1,19 @@
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import get_object_or_404
-from rest_framework.authentication import SessionAuthentication
+from django.http import Http404
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
 from .models import CustomUser
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return
 
 
 class UserRegister(APIView):
@@ -18,7 +25,7 @@ class UserRegister(APIView):
 			user = serializer.create(clean_data)
 			if user:
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return Response(status=status.HTTP_400_BAD_REQUEST)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogin(APIView):
@@ -34,6 +41,7 @@ class UserLogin(APIView):
 			user = serializer.check_user(data)
 			login(request, user)
 			return Response(serializer.data, status=status.HTTP_200_OK)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogout(APIView):
@@ -42,6 +50,26 @@ class UserLogout(APIView):
 	def post(self, request):
 		logout(request)
 		return Response(status=status.HTTP_200_OK)
+	
+class PasswordReset(APIView):
+	permission_classes = (permissions.IsAuthenticated,)
+	authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+	##
+ 
+	def get_object(self, pk=None):
+		if pk is not None:
+			try:
+				return CustomUser.objects.get(pk=pk)
+			except CustomUser.DoesNotExist:
+				raise Http404
+
+	def put(self, request, pk):
+		user = self.get_object(pk)
+		serializer = UserRegisterSerializer(user, request.data, partial=True, context={'request': request})
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserView(APIView):

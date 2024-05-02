@@ -20,6 +20,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 		user_obj.updated_at = timezone.now()
 		user_obj.save()
 		return user_obj
+	
+	def update(self, instance, validated_data):
+		instance.password = validated_data.get('password', instance.password)
+		instance.updated_at = timezone.now()
+		instance.save()
+		return instance
 
 class UserLoginSerializer(serializers.Serializer):
 	email = serializers.EmailField()

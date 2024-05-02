@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
+import moment from 'moment';
 import api from '../api';
 
 const BlogDetails = () => {
@@ -45,13 +47,30 @@ const BlogDetails = () => {
   }, [id]);
 
   useEffect(() => {
-    api.get(`/api/comments/${id}`)
-      .then(function(res) {
-        setComments(res.data);
-      })
-      .catch(function(error) {
+    const fetchData = async () => {
+      try {
+        // Fetch the comments
+        const commentsResponse = await api.get(`/api/comments/${id}`);
+        const commentsData = commentsResponse.data.reverse();
+        setComments(commentsData);
+        
+        // Fetch user data for each comment author
+        const commentsWithData = await Promise.all(
+          commentsData.map(async (comment) => {
+            const userResponse = await api.get(`/api/user/${comment.author}`);
+            const userData = userResponse.data.user;
+            return { ...comment, user: userData };
+          })
+        );
+
+        setComments(commentsWithData);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
         setComments([]);
-      });
+      }
+    };
+  
+    fetchData();
   }, [id]);
 
   function submitComment(e) {
@@ -68,7 +87,17 @@ const BlogDetails = () => {
       {
         content: content
       },
-    ).then(() => setCommentError('')).catch(error => {
+    ).then(() => {
+      setCommentError('')
+      setContent('');
+      api.get(`/api/comments/${id}`)
+      .then(function(res) {
+        setComments(res.data.reverse());
+      })
+      .catch(function(error) {
+        setComments([]);
+      });
+    }).catch(error => {
       console.error('Error processing comment', error);
     });
   }
@@ -77,47 +106,50 @@ const BlogDetails = () => {
     <div>
       <MyNav />
       <div className="custom-container">
-        <h5>Blog Details Page</h5>
+        <h5>View Blog</h5>
       </div>
       <div className='center'>
-        <Card style={{ width: '60rem' }}>
+        <Card style={{ width: '60rem' }} border='info' className='text-center'>
+          {blog.user && (
+            <Card.Header><strong>{blog.user.user.first_name} {blog.user.user.last_name}</strong></Card.Header>
+          )}
           <Card.Body>
-            {blog.user && (
-              <Card.Title>{blog.user.user.first_name} {blog.user.user.last_name}</Card.Title>
-            )}
             <Card.Title>{blog.title}</Card.Title>
-            <Card.Subtitle className="mb-2 text-muted">{blog.created_at}</Card.Subtitle>
             <Card.Text>
               {blog.content}
             </Card.Text>
           </Card.Body>
+          <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
         </Card>
       </div>
       <div className='center'>
         <Form onSubmit={e => submitComment(e)}>
           <Form.Group className="mb-3" controlId="formBasicName">
-            <Form.Label>Comment</Form.Label>
-            <Form.Control size="lg" type="text" placeholder="Enter comment here" value={content} onChange={e => setContent(e.target.value)} />
+            <Form.Control as="textarea" rows={3} size="lg" type="text" placeholder="Enter comment here" value={content} onChange={e => setContent(e.target.value)} />
           </Form.Group>
-          {commentError && <p className="text-danger">{commentError}</p>}
-          <Button variant="primary" type="submit">
+          {commentError && <Alert key='danger' variant='danger'>{commentError}</Alert>}
+          <Button variant="outline-info" type="submit">
             Submit
           </Button>
         </Form>
       </div>
       {/* Display comments */}
-      <div className="center">
-        {comments.map(comment => (
-          <Card key={comment.id} style={{ width: '60rem', marginTop: '20px' }}>
-            <Card.Body>
-              <Card.Title>A user commented</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Time: {comment.created_at}</Card.Subtitle>
-              <Card.Text>
-                {comment.content}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        ))}
+      <div className="custom-container">
+        <ul>
+          {comments.map(comment => (
+            <div className='center' key={comment.id}>
+              <Card id={comment.id} border='warning' className='text-center'style={{ width: '60rem', marginBottom: '-25px' }}>
+                <Card.Header><strong>@{comment.user && comment.user.username} commented</strong></Card.Header>
+                <Card.Body>
+                  <Card.Text>
+                    {comment.content}
+                  </Card.Text>
+                </Card.Body>
+                <Card.Footer className="mb-2 text-muted">{moment(comment.created_at).fromNow()}</Card.Footer>
+              </Card>
+            </div>
+          ))}
+        </ul>
       </div>
     </div>
   );
