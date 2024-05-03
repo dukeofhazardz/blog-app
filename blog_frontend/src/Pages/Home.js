@@ -50,7 +50,7 @@ const Home = () => {
             <div className="subtitle">get latest blogs from blogsite
             </div>
           </div>
-          <Row>
+          <Row className="justify-content-center">
             {allBlogs.length > 0 ? (
               allBlogs.map(blog => (
                 <Col sm={4} key={blog.id}>

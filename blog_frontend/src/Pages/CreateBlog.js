@@ -136,7 +136,7 @@ const CreateBlog = () => {
             <div className="subtitle">here are all of your uploaded posts
             </div>
           </div>
-          <Row>
+          <Row className="justify-content-center">
             {userBlogs.length > 0 ? (
               userBlogs.map(blog => (
                 <Col sm={4} key={blog.id}>
