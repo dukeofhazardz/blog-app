@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import MyNav from '../Components/Navbar';
-import AppHero from '../Components/Hero';
-import AppFooter from '../Components/Footer';
-import { useNavigate } from 'react-router-dom';
-import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import blogImg from '../assets/images/img9.jpg';
-import moment from 'moment';
-import api from '../api';
+import React, { useState, useEffect } from "react";
+import MyNav from "../Components/Navbar";
+import AppHero from "../Components/Hero";
+import AppFooter from "../Components/Footer";
+import { useNavigate } from "react-router-dom";
+import Card from "react-bootstrap/Card";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import blogImg from "../assets/images/img9.jpg";
+import moment from "moment";
+import api from "../api";
 
 const Home = () => {
-  const [ allBlogs, setallBlogs ] = useState([]);
+  const [allBlogs, setallBlogs] = useState([]);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     // Fetch the current user data
-    api.get("/api/user")
-      .catch(function(error) {
-        navigate("/login");
-      });
+    api.get("/api/user").catch(function (error) {
+      navigate("/login");
+    });
   }, [navigate]);
 
   useEffect(() => {
@@ -34,7 +32,7 @@ const Home = () => {
         setallBlogs([]);
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -45,25 +43,32 @@ const Home = () => {
       <section id="blog" className="block blog-block">
         <Container fluid>
           <div className="title-holder">
-            <h2>Latest from blog
-            </h2>
-            <div className="subtitle">get latest blogs from blogsite
-            </div>
+            <h2>Latest from blog</h2>
+            <div className="subtitle">get latest blogs from blogsite</div>
           </div>
           <Row className="justify-content-center">
             {allBlogs.length > 0 ? (
-              allBlogs.map(blog => (
+              allBlogs.map((blog) => (
                 <Col sm={4} key={blog.id}>
-                  <div className='holder'>
+                  <div className="holder">
                     <Card>
                       <Card.Img variant="top" src={blogImg} />
                       <Card.Body>
-                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <time>
+                          {moment(blog.created_at).format(
+                            "DD MMM YYYY, h:mm A"
+                          )}
+                        </time>
                         <Card.Title>{blog.title}</Card.Title>
                         <Card.Text className="truncate">
                           {blog.content}
                         </Card.Text>
-                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                        <a
+                          href={`/blog-details/${blog.id}`}
+                          className="btn btn-primary"
+                        >
+                          Read More <i className="fas fa-chevron-right"></i>
+                        </a>
                       </Card.Body>
                     </Card>
                   </div>
@@ -71,8 +76,12 @@ const Home = () => {
               ))
             ) : (
               <Col sm={4}>
-                <div className='center'>
-                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                <div className="center">
+                  <Card
+                    style={{ width: "60rem" }}
+                    border="warning"
+                    className="text-center"
+                  >
                     <Card.Body>Blogs will appear here.</Card.Body>
                   </Card>
                 </div>

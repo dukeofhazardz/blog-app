@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import MyNav from '../Components/Navbar';
-import AppFooter from '../Components/Footer';
-import { useNavigate } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import Alert from 'react-bootstrap/Alert';
-import blogImg from '../assets/images/img9.jpg';
-import moment from 'moment';
-import api from '../api';
+import React, { useState, useEffect } from "react";
+import MyNav from "../Components/Navbar";
+import AppFooter from "../Components/Footer";
+import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
+import Alert from "react-bootstrap/Alert";
+import blogImg from "../assets/images/img9.jpg";
+import moment from "moment";
+import api from "../api";
 
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
@@ -27,133 +27,187 @@ const CreateBlog = () => {
 
   useEffect(() => {
     // Fetch the current user data
-    api.get("/api/user")
-      .then(function(res) {
+    api
+      .get("/api/user")
+      .then(function (res) {
         setCurrentUser(res.data.user);
-        api.get(`/api/blogs/author/${res.data.user.id}`)
-          .then(function(res) {
+        api
+          .get(`/api/blogs/author/${res.data.user.id}`)
+          .then(function (res) {
             setUserBlogs(res.data.reverse());
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.error("Error fetching user blogs:", error);
           });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         navigate("/login");
       });
   }, [navigate]);
 
-
   function postBlog(e) {
     e.preventDefault();
-    setMessage("")
+    setMessage("");
 
-     // Basic validation
-     if (!title.trim() || !content.trim() || !category.trim()) {
-      setFormError('Please fill out all required fields');
+    // Basic validation
+    if (!title.trim() || !content.trim() || !category.trim()) {
+      setFormError("Please fill out all required fields");
       return;
     }
 
-    api.post(
-      `/api/create`,
-      {
+    api
+      .post(`/api/create`, {
         title: title,
         content: content,
         category: category,
-        tags: tags
-      }
-    ).then(() => {
-      setFormError("");
-      setTitle("");
-      setContent("");
-      setCategory("");
-      setTags("");
-      setMessage('Blogpost created successfully')
-      api.get(`/api/blogs/author/${currentUser.id}`)
-        .then(function(res) {
-          // Reverse the order of blogs to get the most recent first
-          setUserBlogs(res.data.reverse());
-        })
-        .catch(function(error) {
-          console.error("Error fetching user blogs:", error);
-        });
-    }).catch(error => {
-      console.error('Error processing content', error);
-    });
+        tags: tags,
+      })
+      .then(() => {
+        setFormError("");
+        setTitle("");
+        setContent("");
+        setCategory("");
+        setTags("");
+        setMessage("Blogpost created successfully");
+        api
+          .get(`/api/blogs/author/${currentUser.id}`)
+          .then(function (res) {
+            // Reverse the order of blogs to get the most recent first
+            setUserBlogs(res.data.reverse());
+          })
+          .catch(function (error) {
+            console.error("Error fetching user blogs:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error processing content", error);
+      });
   }
 
   function deleteBlog(blogId) {
-    api.delete(`/api/delete/${blogId}`)
-    .then(function(res) {
-      setUserBlogs(prevUserBlogs => prevUserBlogs.filter(blog => blog.id !== blogId));
-    })
-		.catch(function(error) {
-      console.error("Error deleting blog:", error);
-    });
+    api
+      .delete(`/api/delete/${blogId}`)
+      .then(function (res) {
+        setUserBlogs((prevUserBlogs) =>
+          prevUserBlogs.filter((blog) => blog.id !== blogId)
+        );
+      })
+      .catch(function (error) {
+        console.error("Error deleting blog:", error);
+      });
   }
 
   return (
     <div>
       <MyNav />
       <section id="create" className="block create-block">
-      <Container fluid>
-        <div className="title-holder">
-          <h2>Create Blog Post</h2>
-          <div className="subtitle">craft an amazing blogpost</div>
-        </div>
-        <Form className='create-form' onSubmit={e => postBlog(e)}>
-          <Row>
-            <Col sm={4}>
-              <Form.Control type="text" placeholder="Enter your post title" required value={title} onChange={e => setTitle(e.target.value)}/>
-            </Col>
-            <Col sm={4}>
-              <Form.Control type="text" placeholder="Enter your post category (e.g Technology)" required value={category} onChange={e => setCategory(e.target.value)}/>
-            </Col>
-            <Col sm={4}>
-              <Form.Control type="text" placeholder="Enter your post tags (e.g #code #life)" required value={tags} onChange={e => setTags(e.target.value)}/>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12}>
-              <Form.Control as="textarea" placeholder="Write your blogpost" required value={content} onChange={e => setContent(e.target.value)}/>
-            </Col>
-          </Row>
-          {formError && <Alert key='danger' variant='danger'>{formError}</Alert>}
-          {message && <Alert key='success' variant='success'>{message}</Alert>}
-          <div className='btn-holder'>
-            <Button type="submit">Submit</Button>
-          </div>
-        </Form>
-      </Container>
-    </section>
-
-    {/* Display user blogs */}
-			<section id="blog" className="block blog-block">
         <Container fluid>
           <div className="title-holder">
-            <h2>Your blogposts
-            </h2>
-            <div className="subtitle">here are all of your uploaded posts
+            <h2>Create Blog Post</h2>
+            <div className="subtitle">craft an amazing blogpost</div>
+          </div>
+          <Form className="create-form" onSubmit={(e) => postBlog(e)}>
+            <Row>
+              <Col sm={4}>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your post title"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </Col>
+              <Col sm={4}>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your post category (e.g Technology)"
+                  required
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                />
+              </Col>
+              <Col sm={4}>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your post tags (e.g #code #life)"
+                  required
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <Form.Control
+                  as="textarea"
+                  placeholder="Write your blogpost"
+                  required
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </Col>
+            </Row>
+            {formError && (
+              <Alert key="danger" variant="danger">
+                {formError}
+              </Alert>
+            )}
+            {message && (
+              <Alert key="success" variant="success">
+                {message}
+              </Alert>
+            )}
+            <div className="btn-holder">
+              <Button type="submit">Submit</Button>
             </div>
+          </Form>
+        </Container>
+      </section>
+
+      {/* Display user blogs */}
+      <section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Your blogposts</h2>
+            <div className="subtitle">here are all of your uploaded posts</div>
           </div>
           <Row className="justify-content-center">
             {userBlogs.length > 0 ? (
-              userBlogs.map(blog => (
+              userBlogs.map((blog) => (
                 <Col sm={4} key={blog.id}>
-                  <div className='holder'>
+                  <div className="holder">
                     <Card>
                       <Card.Img variant="top" src={blogImg} />
                       <Card.Body>
-                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <time>
+                          {moment(blog.created_at).format(
+                            "DD MMM YYYY, h:mm A"
+                          )}
+                        </time>
                         <Card.Title>{blog.title}</Card.Title>
                         <Card.Text className="truncate">
                           {blog.content}
                         </Card.Text>
-                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
-												<div className="button-container">
-													<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
-													<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
-												</div>
+                        <a
+                          href={`/blog-details/${blog.id}`}
+                          className="btn btn-primary"
+                        >
+                          Read More <i className="fas fa-chevron-right"></i>
+                        </a>
+                        <div className="button-container">
+                          <Button
+                            variant="info"
+                            href={`/update-blog/${blog.id}`}
+                          >
+                            Update Blog
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => deleteBlog(blog.id)}
+                          >
+                            Delete Blog
+                          </Button>
+                        </div>
                       </Card.Body>
                     </Card>
                   </div>
@@ -161,8 +215,12 @@ const CreateBlog = () => {
               ))
             ) : (
               <Col sm={4}>
-                <div className='center'>
-                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                <div className="center">
+                  <Card
+                    style={{ width: "60rem" }}
+                    border="warning"
+                    className="text-center"
+                  >
                     <Card.Body>Blogs will appear here.</Card.Body>
                   </Card>
                 </div>
@@ -175,7 +233,7 @@ const CreateBlog = () => {
         <AppFooter />
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default CreateBlog
+export default CreateBlog;
