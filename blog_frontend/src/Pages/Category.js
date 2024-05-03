@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
+import AppFooter from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
+import blogImg from '../assets/images/img9.jpg';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
@@ -46,15 +51,7 @@ const Category = () => {
         const blogsResponse = await api.get(`/api/category/${selectedCategory}`);
         const blogs = blogsResponse.data.reverse();
   
-        const blogsWithData = await Promise.all(
-          blogs.map(async (blog) => {
-            const userResponse = await api.get(`/api/user/${blog.author}`);
-            const user = userResponse.data.user;
-            return { ...blog, user };
-          })
-        );
-  
-        setCategorizedBlogs(blogsWithData);
+        setCategorizedBlogs(blogs);
       } catch (error) {
         console.error("Error fetching blogs:", error);
         setCategorizedBlogs([]);
@@ -67,59 +64,72 @@ const Category = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>Select Category</h5>
-      </div>
-      <div className="center">
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formCategory">
-            <Form.Label>Select a category:</Form.Label>
-            <Form.Select onChange={handleCategoryChange} value={selectedCategory}>
-              <option value="">Select...</option>
-              {allCategories.map(category => (
-                <option key={category.id} value={category.name}>{category.name}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-          <Button className="mt-3" variant="outline-warning" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </div>
-      <div className="custom-container">
-        <h5>Blogs Categorized by &nbsp;<Badge bg="secondary">{selectedCategory}</Badge></h5>
-      </div>
+      <section id="category" className="block category-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Filter by Category</h2>
+            <div className="subtitle">select your category</div>
+          </div>
+          <Form className='category-form' onSubmit={handleSubmit}>
+            <Row className="justify-content-center">
+              <Col sm={4}>
+                <Form.Select onChange={handleCategoryChange} value={selectedCategory}>
+                  <option value="">Select...</option>
+                  {allCategories.map(category => (
+                    <option key={category.id} value={category.name}>{category.name}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            <div className='btn-holder'>
+              <Button type="submit">Submit</Button>
+            </div>
+          </Form>
+        </Container>
+      </section>
 
-      <div className="custom-container">
-        {categorizedBlogs ? (
-          <ul>
-            {categorizedBlogs.map(blog => (
-              <div className='center' key={blog.id}>
-                <Card style={{ width: '60rem' }} border='warning' className='text-center'>
-                  {blog.user ? (
-                    <>
-                      <Card.Header><strong>{blog.user.first_name} {blog.user.last_name}</strong></Card.Header>
-                    </>
-                  ) : (
-                    <Card.Header>Loading user...</Card.Header>
-                  )}
-                  <Card.Body>
-                    <Card.Title>{blog.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{selectedCategory}</Card.Subtitle>
-                    <Card.Text>
-                      {blog.content}
-                    </Card.Text>
-                    <Button variant="outline-dark" href={`/blog-details/${blog.id}`}>Details</Button>
-                  </Card.Body>
-                  <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
-                </Card>
-              </div>
-            ))}
-          </ul>
-        ) : (
-          <p>No blogs found.</p>
-        )}
-      </div>
+      <section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Results
+            </h2>
+            <div className="subtitle">blogs categorized by &nbsp;<Badge bg="secondary">{selectedCategory}</Badge>
+            </div>
+          </div>
+          <Row className="justify-content-center">
+            {categorizedBlogs.length > 0 ? (
+              categorizedBlogs.map(blog => (
+                <Col sm={4} key={blog.id}>
+                  <div className='holder'>
+                    <Card>
+                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Body>
+                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text className="truncate">
+                          {blog.content}
+                        </Card.Text>
+                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              ))
+            ) : (
+              <Col sm={4}>
+                <div className='center'>
+                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                    <Card.Body>Blogs will appear here.</Card.Body>
+                  </Card>
+                </div>
+              </Col>
+            )}
+          </Row>
+        </Container>
+      </section>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
     </div>
   );
 };

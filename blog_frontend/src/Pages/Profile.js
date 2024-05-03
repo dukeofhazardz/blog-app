@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
+import ProfileInfo from '../Components/ProfileInfo';
+import AppFooter from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from "react-bootstrap/Button";
-import Badge from 'react-bootstrap/Badge';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import blogImg from '../assets/images/img9.jpg';
 import moment from "moment";
 import api from '../api';
 
 const Profile = () => {
-	const [currentUser, setCurrentUser] = useState(null);
 	const [userBlogs, setUserBlogs] = useState([]);
-
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		// Fetch the current user data
 		api.get("/api/user")
 			.then(function(res) {
-				setCurrentUser(res.data.user);
 				api.get(`/api/blogs/author/${res.data.user.id}`)
 					.then(function(res) {
 						setUserBlogs(res.data.reverse());
@@ -44,63 +46,58 @@ const Profile = () => {
 	return (
 		<div>
 			<MyNav />
-				{/* Display user details */}
-			<div className="center profile">
-					{currentUser && (
-					<Card style={{ width: '60rem' }} border='warning' className='text-center'>
-							<Card.Header as="h4">Profile</Card.Header>
-							<Card.Body>
-							<Card.Title>{currentUser.first_name} {currentUser.last_name}</Card.Title>
-							<Card.Title><Badge bg="dark" text="light">@{currentUser.username}</Badge></Card.Title>
-							<Card.Title>📧 <Badge bg="info">{currentUser.email}</Badge></Card.Title>
-							<div className='button-container profile'>
-								<Button variant="warning" href={'/create-blog'}>Create Blogpost</Button>
-								<Button variant="outline-danger" href={'/reset-password'}>Reset Password</Button>
-							</div>
-							</Card.Body>
-					</Card>
-					)}
+				{/* Display Profile details */}
+			<div id="profile">
+				<ProfileInfo />
 			</div>
 
 			{/* Display user blogs */}
-			<div className="custom-container">
-				<h5>Your Blogs</h5>
-				{userBlogs.length > 0 ? (
-					<ul>
-						{userBlogs.map(blog => (
-							<div className='center' key={blog.id}>
-								<Card style={{ width: '60rem' }} border='info' className='text-center'>
-									{currentUser ? (
-										<>
-											<Card.Header><strong>{currentUser.first_name} {currentUser.last_name}</strong></Card.Header>
-										</>
-									) : (
-										<Card.Header>Loading user...</Card.Header>
-									)}
-									<Card.Body>
-										<Card.Title>{blog.title}</Card.Title>
-										<Card.Text>
-											{blog.content}
-										</Card.Text>
-										<div className="button-container">
-											<Button variant="info" href={`/blog-details/${blog.id}`}>Details</Button>    
-											<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
-											<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
-										</div>
-									</Card.Body>
-									<Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
-								</Card>
-							</div>
-						))}
-					</ul>
-				) : (
-					<div className='center'>
-						<Card style={{ width: '60rem' }} border='warning' className='text-center'>
-							<Card.Body>Your blogs will appear here.</Card.Body>
-						</Card>
-					</div>
-				)}
-			</div>
+			<section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Your blogposts
+            </h2>
+            <div className="subtitle">here are all of your uploaded posts
+            </div>
+          </div>
+          <Row>
+            {userBlogs.length > 0 ? (
+              userBlogs.map(blog => (
+                <Col sm={4} key={blog.id}>
+                  <div className='holder'>
+                    <Card>
+                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Body>
+                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text className="truncate">
+                          {blog.content}
+                        </Card.Text>
+                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+												<div className="button-container">
+													<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
+													<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
+												</div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              ))
+            ) : (
+              <Col sm={4}>
+                <div className='center'>
+                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                    <Card.Body>Blogs will appear here.</Card.Body>
+                  </Card>
+                </div>
+              </Col>
+            )}
+          </Row>
+        </Container>
+      </section>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
 		</div>
 	);
 }

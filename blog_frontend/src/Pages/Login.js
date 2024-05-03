@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import MyNav from '../Components/Navbar';
+import AppFooter from '../Components/Footer';
 import Alert from 'react-bootstrap/Alert';
+import Container from 'react-bootstrap/esm/Container';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
@@ -47,29 +49,39 @@ const Login = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>Login Page</h5>
-      </div>
-      <div className='center'>
-        <Form onSubmit={e => submitLogin(e)}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" value={email} onChange={e => setEmail(e.target.value)} />
-            <Form.Text className="text-muted">
-              We'll never share your email with anyone else.
-            </Form.Text>
-          </Form.Group>
+      <section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Login
+            </h2>
+            <div className="subtitle">login to engage with latest blogs
+            </div>
+          </div>
+        </Container>
+        <div className='center'>
+          <Form onSubmit={e => submitLogin(e)}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control type="email" placeholder="Enter email" value={email} onChange={e => setEmail(e.target.value)} />
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-          </Form.Group>
-          {error && <Alert key='danger' variant='danger'>{error}</Alert>}
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </div>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+            </Form.Group>
+            {error && <Alert key='danger' variant='danger'>{error}</Alert>}
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </div>
+      </section>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
     </div>
   )
 }

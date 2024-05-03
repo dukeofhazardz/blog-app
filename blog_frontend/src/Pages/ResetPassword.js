@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import AppFooter from '../Components/Footer';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import MyNav from '../Components/Navbar';
@@ -67,27 +71,35 @@ const ResetPassword = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>Reset Password</h5>
-      </div>
-      <div className='center'>
-        <Form onSubmit={e => submitLogin(e)}>
-        <Form.Group className="mb-3" controlId="formBasicPassword1">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Enter new password" value={password1} onChange={e => setPassword1(e.target.value)} />
-          </Form.Group>
+      <section id="reset" className="block reset-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Reset Your Password</h2>
+            <div className="subtitle">be secured</div>
+          </div>
+          <Form className='reset-form' onSubmit={e => submitLogin(e)}>
+            <Row className="justify-content-center">
+              <Col sm={4}>
+                <Form.Control type="password" placeholder="Enter new password" required value={password1} onChange={e => setPassword1(e.target.value)} />
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <Col sm={4}>
+                <Form.Control type="password" placeholder="Enter new password again" required value={password2} onChange={e => setPassword2(e.target.value)} />
+              </Col>
+            </Row>
+            {error && <Alert key='danger' variant='danger'>{error}</Alert>}
+            {message && <Alert key='success' variant='success'>{message}</Alert>}
+            <div className='btn-holder'>
+              <Button type="submit">Submit</Button>
+            </div>
+          </Form>
+        </Container>
+      </section>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword2">
-            <Form.Label>Password again</Form.Label>
-            <Form.Control type="password" placeholder="Enter new password again" value={password2} onChange={e => setPassword2(e.target.value)} />
-          </Form.Group>
-          {error && <Alert key='danger' variant='danger'>{error}</Alert>}
-          {message && <Alert key='success' variant='success'>{message}</Alert>}
-          <Button variant="outline-primary" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </div>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
     </div>
   )
 }

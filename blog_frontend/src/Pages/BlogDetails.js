@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
+import AppFooter from '../Components/Footer';
 import { useNavigate, useParams } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
+import Container from 'react-bootstrap/Container';
+import Carousel from 'react-bootstrap/Carousel';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import blogImg from '../assets/images/img9.jpg';
 import moment from 'moment';
 import api from '../api';
 
@@ -13,6 +20,7 @@ const BlogDetails = () => {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
   const [commentError, setCommentError] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -75,6 +83,7 @@ const BlogDetails = () => {
 
   function submitComment(e) {
     e.preventDefault();
+    setMessage("");
 
     // Basic validation
     if (!content.trim()) {
@@ -88,8 +97,9 @@ const BlogDetails = () => {
         content: content
       },
     ).then(() => {
-      setCommentError('')
+      setCommentError('');
       setContent('');
+      setMessage('Comment uploaded successfully');
       api.get(`/api/comments/${id}`)
       .then(function(res) {
         setComments(res.data.reverse());
@@ -105,52 +115,88 @@ const BlogDetails = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>View Blog</h5>
-      </div>
-      <div className='center'>
-        <Card style={{ width: '60rem' }} border='info' className='text-center'>
-          {blog.user && (
-            <Card.Header><strong>{blog.user.user.first_name} {blog.user.user.last_name}</strong></Card.Header>
-          )}
-          <Card.Body>
-            <Card.Title>{blog.title}</Card.Title>
-            <Card.Text>
-              {blog.content}
-            </Card.Text>
-          </Card.Body>
-          <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
-        </Card>
-      </div>
-      <div className='center'>
-        <Form onSubmit={e => submitComment(e)}>
-          <Form.Group className="mb-3" controlId="formBasicName">
-            <Form.Control as="textarea" rows={3} size="lg" type="text" placeholder="Enter comment here" value={content} onChange={e => setContent(e.target.value)} />
-          </Form.Group>
+      <section id="details" className="block bd-block">
+      <Container fluid>
+        <div className="title-holder">
+          <h2>{blog.title}</h2>
+          <div className="subtitle">details</div>
+        </div>
+        <Row>
+          <Col sm={6}>
+            <Image src={blogImg} />
+          </Col>
+          <Col sm={6}>
+            <Card>
+              <Card.Body>
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    {' '}{blog.content}{' '}
+                  </p>
+                  {blog.user && (
+                  <footer className="blockquote-footer">
+                    Posted by <cite title="Source Title">{blog.user.user.first_name} {blog.user.user.last_name} {moment(blog.created_at).fromNow()}</cite>
+                  </footer>
+                  )}
+                </blockquote>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </section>
+
+    {/* Display Comment Form */}
+    <section id="comment-form" className="block comment-block">
+      <Container fluid>
+        <div className="title-holder">
+          <h2>Comment</h2>
+          <div className="subtitle">engage with this post</div>
+        </div>
+        <Form className='comment-form' onSubmit={e => submitComment(e)}>
+          <Row>
+            <Col sm={12}>
+              <Form.Control as="textarea" placeholder="Enter your comment here" required value={content} onChange={e => setContent(e.target.value)} />
+            </Col>
+          </Row>
           {commentError && <Alert key='danger' variant='danger'>{commentError}</Alert>}
-          <Button variant="outline-info" type="submit">
-            Submit
-          </Button>
+          {message && <Alert key='success' variant='success'>{message}</Alert>}
+          <div className='btn-holder'>
+            <Button type="submit">Submit</Button>
+          </div>
         </Form>
-      </div>
-      {/* Display comments */}
-      <div className="custom-container">
-        <ul>
-          {comments.map(comment => (
-            <div className='center' key={comment.id}>
-              <Card id={comment.id} border='warning' className='text-center'style={{ width: '60rem', marginBottom: '-25px' }}>
-                <Card.Header><strong>@{comment.user && comment.user.username} commented</strong></Card.Header>
-                <Card.Body>
-                  <Card.Text>
-                    {comment.content}
-                  </Card.Text>
-                </Card.Body>
-                <Card.Footer className="mb-2 text-muted">{moment(comment.created_at).fromNow()}</Card.Footer>
-              </Card>
-            </div>
-          ))}
-        </ul>
-      </div>
+      </Container>
+    </section>
+
+    {/* Display comments */}
+    <section id="comments" className="comments-block">
+      <Container fluid>
+        <div className="title-holder">
+          <h2>Comments</h2>
+          <div className="subtitle">what people are saying about this post</div>
+        </div>
+        <Carousel controls={false}>
+          {
+            comments.map(comment => {
+              return (
+                <Carousel.Item key={comment.id}>
+                  <blockquote>
+                    <p>{comment.content}</p>
+                    <cite>
+                      <span className='name'>{comment.user && comment.user.first_name} {comment.user && comment.user.last_name} @{comment.user && comment.user.username}</span>
+                      <span className='designation'>{moment(comment.created_at).fromNow()}</span>
+                    </cite>
+                  </blockquote>             
+                </Carousel.Item>
+              );
+            })
+          }
+        </Carousel>
+      </Container>
+    </section>
+      
+    <footer id="footer">
+      <AppFooter />
+    </footer>
     </div>
   );
 };

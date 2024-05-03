@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
+import AppHero from '../Components/Hero';
+import AppFooter from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
+import blogImg from '../assets/images/img9.jpg';
 import moment from 'moment';
 import api from '../api';
 
@@ -24,18 +29,8 @@ const Home = () => {
       try {
         const blogsResponse = await api.get("/api/blog");
         const blogs = blogsResponse.data.reverse();
-  
-        const blogsWithData = await Promise.all(
-          blogs.map(async (blog) => {
-            const userResponse = await api.get(`/api/user/${blog.author}`);
-            const user = userResponse.data.user;
-            return { ...blog, user };
-          })
-        );
-  
-        setallBlogs(blogsWithData);
+        setallBlogs(blogs);
       } catch (error) {
-        console.error("Error fetching blogs:", error);
         setallBlogs([]);
       }
     };
@@ -46,40 +41,49 @@ const Home = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>Welcome to Blogsite</h5>
-        {allBlogs.length > 0 ? (
-          <ul>
-            {allBlogs.map(blog => (
-              <div className='center' key={blog.id}>
-                <Card style={{ width: '60rem' }} border='info' className='text-center'>
-                  {blog.user ? (
-                    <>
-                      <Card.Header><strong>{blog.user.first_name} {blog.user.last_name}</strong></Card.Header>
-                    </>
-                  ) : (
-                    <Card.Header>Loading user...</Card.Header>
-                  )}
-                  <Card.Body>
-                    <Card.Title>{blog.title}</Card.Title>
-                    <Card.Text>
-                      {blog.content}
-                    </Card.Text>
-                    <Button variant="info" href={`/blog-details/${blog.id}`}>Details</Button>
-                  </Card.Body>
-                  <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
-                </Card>
-              </div>
-            ))}
-          </ul>
-        ) : (
-          <div className='center'>
-            <Card style={{ width: '60rem' }} border='warning' className='text-center'>
-              <Card.Body>Blogs will appear here.</Card.Body>
-            </Card>
+      <AppHero />
+      <section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Latest from blog
+            </h2>
+            <div className="subtitle">get latest blogs from blogsite
+            </div>
           </div>
-        )}
-      </div>
+          <Row>
+            {allBlogs.length > 0 ? (
+              allBlogs.map(blog => (
+                <Col sm={4} key={blog.id}>
+                  <div className='holder'>
+                    <Card>
+                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Body>
+                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text className="truncate">
+                          {blog.content}
+                        </Card.Text>
+                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              ))
+            ) : (
+              <Col sm={4}>
+                <div className='center'>
+                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                    <Card.Body>Blogs will appear here.</Card.Body>
+                  </Card>
+                </div>
+              </Col>
+            )}
+          </Row>
+        </Container>
+      </section>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
     </div>
   );
 };

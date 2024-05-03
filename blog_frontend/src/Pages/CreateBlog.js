@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import MyNav from '../Components/Navbar';
+import AppFooter from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
+import blogImg from '../assets/images/img9.jpg';
 import moment from 'moment';
 import api from '../api';
 
@@ -90,74 +95,85 @@ const CreateBlog = () => {
   return (
     <div>
       <MyNav />
-      <div className="custom-container">
-        <h5>Create Blog Post</h5>
-      </div>
-      <div className='center'>
-        <Form onSubmit={e => postBlog(e)}>
-          <Form.Group className="mb-3" controlId="formBasicTitle">
-            <Form.Label>Title</Form.Label>
-            <Form.Control type="text" placeholder="Enter Title here" value={title} onChange={e => setTitle(e.target.value)} />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicContent">
-            <Form.Label>Content</Form.Label>
-            <Form.Control as="textarea" rows={3} size="lg" type="text" placeholder="Enter Content here" value={content} onChange={e => setContent(e.target.value)} />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicCategory">
-            <Form.Label>Category</Form.Label>
-            <Form.Control type="text" placeholder="(e.g Technology)" value={category} onChange={e => setCategory(e.target.value)} />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicTags">
-            <Form.Label>Tags</Form.Label>
-            <Form.Control type="text" placeholder="(e.g #code #life)" value={tags} onChange={e => setTags(e.target.value)} />
-          </Form.Group>
+      <section id="create" className="block create-block">
+      <Container fluid>
+        <div className="title-holder">
+          <h2>Create Blog Post</h2>
+          <div className="subtitle">craft an amazing blogpost</div>
+        </div>
+        <Form className='create-form' onSubmit={e => postBlog(e)}>
+          <Row>
+            <Col sm={4}>
+              <Form.Control type="text" placeholder="Enter your post title" required value={title} onChange={e => setTitle(e.target.value)}/>
+            </Col>
+            <Col sm={4}>
+              <Form.Control type="text" placeholder="Enter your post category (e.g Technology)" required value={category} onChange={e => setCategory(e.target.value)}/>
+            </Col>
+            <Col sm={4}>
+              <Form.Control type="text" placeholder="Enter your post tags (e.g #code #life)" required value={tags} onChange={e => setTags(e.target.value)}/>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12}>
+              <Form.Control as="textarea" placeholder="Write your blogpost" required value={content} onChange={e => setContent(e.target.value)}/>
+            </Col>
+          </Row>
           {formError && <Alert key='danger' variant='danger'>{formError}</Alert>}
           {message && <Alert key='success' variant='success'>{message}</Alert>}
-
-          <Button variant="outline-info" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </div>
-      {/* Display user blogs */}
-      <div className="custom-container">
-        <h5>Your Blogs</h5>
-        {userBlogs.length > 0 ? (
-          <ul>
-            {userBlogs.map(blog => (
-              <div className='center' key={blog.id}>
-                <Card style={{ width: '60rem' }} border='info' className='text-center'>
-                  {currentUser ? (
-                    <>
-                      <Card.Header><strong>{currentUser.first_name} {currentUser.last_name}</strong></Card.Header>
-                    </>
-                  ) : (
-                    <Card.Header>Loading user...</Card.Header>
-                  )}
-                  <Card.Body>
-                    <Card.Title>{blog.title}</Card.Title>
-                    <Card.Text>
-                      {blog.content}
-                    </Card.Text>
-                    <div className="button-container">
-											<Button variant="info" href={`/blog-details/${blog.id}`}>Details</Button>    
-											<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
-											<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
-										</div>
-                  </Card.Body>
-                  <Card.Footer className="text-muted">{moment(blog.created_at).fromNow()}</Card.Footer>
-                </Card>
-              </div>
-            ))}
-          </ul>
-        ) : (
-          <div className='center'>
-            <Card style={{ width: '60rem' }} border='warning' className='text-center'>
-              <Card.Body>Blogs will appear here.</Card.Body>
-            </Card>
+          <div className='btn-holder'>
+            <Button type="submit">Submit</Button>
           </div>
-        )}
-      </div>
+        </Form>
+      </Container>
+    </section>
+
+    {/* Display user blogs */}
+			<section id="blog" className="block blog-block">
+        <Container fluid>
+          <div className="title-holder">
+            <h2>Your blogposts
+            </h2>
+            <div className="subtitle">here are all of your uploaded posts
+            </div>
+          </div>
+          <Row>
+            {userBlogs.length > 0 ? (
+              userBlogs.map(blog => (
+                <Col sm={4} key={blog.id}>
+                  <div className='holder'>
+                    <Card>
+                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Body>
+                        <time>{moment(blog.created_at).format('DD MMM YYYY, h:mm A')}</time>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text className="truncate">
+                          {blog.content}
+                        </Card.Text>
+                        <a href={`/blog-details/${blog.id}`} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+												<div className="button-container">
+													<Button variant="info" href={`/update-blog/${blog.id}`}>Update Blog</Button>
+													<Button variant="danger" onClick={() => deleteBlog(blog.id)}>Delete Blog</Button>
+												</div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              ))
+            ) : (
+              <Col sm={4}>
+                <div className='center'>
+                  <Card style={{ width: '60rem' }} border='warning' className='text-center'>
+                    <Card.Body>Blogs will appear here.</Card.Body>
+                  </Card>
+                </div>
+              </Col>
+            )}
+          </Row>
+        </Container>
+      </section>
+      <footer id="footer">
+        <AppFooter />
+      </footer>
     </div>
   )
 }

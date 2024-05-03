@@ -3,14 +3,12 @@ import api from '../api';
 import Container from "react-bootstrap/Container";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Button from "react-bootstrap/Button";
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 const MyNav = () => {
   const [currentUser, setCurrentUser] = useState(null);
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,8 +21,7 @@ const MyNav = () => {
     });
   }, []);
 
-  function submitLogout(e) {
-    e.preventDefault();
+  function logOut() {
     api.post(
       "/api/logout",
     ).then(function(res) {
@@ -34,68 +31,46 @@ const MyNav = () => {
   }
   
   return (
-    <div>
-      <Navbar bg="dark" variant="dark">
+    <Navbar bg="light" expand="lg" sticky="top">
       <Container>
         <Navbar.Brand href="/home">Blogsite</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="/home">Home</Nav.Link>
+          <Nav className="justify-content-end" activeKey={location.pathname}>
+            {currentUser ? (
+              <>
+                <Nav.Link href="/home">
+                  Home
+                </Nav.Link>
+                <Nav.Link href="/profile">
+                  Profile
+                </Nav.Link>
+                <Nav.Link href="/tags">
+                  Tags
+                </Nav.Link>
+                <Nav.Link href="/categories">
+                  Categories
+                </Nav.Link>
+                <Nav.Link href="/create-blog">
+                  Create Blog
+                </Nav.Link>
+                <Nav.Link onClick={() => logOut()}>Log out
+                </Nav.Link>
+                <Navbar.Text>Signed in as: {currentUser.first_name} {currentUser.last_name}
+                </Navbar.Text>
+              </>
+            ) : (
+              <>
+                <Nav.Link href="/register">
+                  Register
+                </Nav.Link>
+                <Nav.Link href="/login">
+                  Login
+                </Nav.Link>
+              </>
+            )}
           </Nav>
-          {currentUser ? (
-            <Navbar.Collapse className="justify-content-end">
-              <div className='button-container'>
-                <Navbar.Text>
-                  <Link to="/profile">
-                    <Button id="form_btn" variant="light">Profile</Button>
-                  </Link>
-                </Navbar.Text>
-                <Navbar.Text>
-                  <Link to="/tags">
-                    <Button id="form_btn" variant="light">Tags</Button>
-                  </Link>
-                </Navbar.Text>
-                <Navbar.Text>
-                  <Link to="/categories">
-                    <Button id="form_btn" variant="light">Categories</Button>
-                  </Link>
-                </Navbar.Text>
-                <Navbar.Text>
-                  <Link to="/create-blog">
-                    <Button id="form_btn" variant="light">Create Blog</Button>
-                  </Link>
-                </Navbar.Text>
-                <Navbar.Text>
-                  <form onSubmit={e => submitLogout(e)}>
-                    <Button type="submit" variant="light">Log out</Button>
-                  </form>
-                </Navbar.Text>
-                <Navbar.Text>
-                  Signed in as: {currentUser.first_name} {currentUser.last_name}
-                </Navbar.Text>
-              </div>
-            </Navbar.Collapse>
-          ) : (
-            <Navbar.Collapse className="justify-content-end">
-              <div className='button-container'>
-                <Navbar.Text>
-                  <Link to="/register">
-                    <Button id="form_btn" variant="light">Register</Button>
-                  </Link>
-                </Navbar.Text>
-                <Navbar.Text>
-                  <Link to="/login">
-                    <Button id="form_btn" variant="light">Login</Button>
-                  </Link>
-                </Navbar.Text>
-              </div>
-            </Navbar.Collapse>
-          )}
-        </Navbar.Collapse>
       </Container>
     </Navbar>
-    </div>
   )
 }
 
