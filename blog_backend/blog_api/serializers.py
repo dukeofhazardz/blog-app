@@ -9,6 +9,7 @@ class CreateUpdateBlogSerializer(serializers.ModelSerializer):
     content = serializers.CharField()
     category = serializers.CharField()
     tags = serializers.CharField()
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = Blog
@@ -40,6 +41,7 @@ class CreateUpdateBlogSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.content = validated_data.get('content', instance.content)
+        instance.image = validated_data.get('image', instance.image)
         instance.updated_at = timezone.now()
         instance.save()
         return instance
@@ -63,7 +65,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ('id', 'author', 'title', 'content', 'category', 'tags', 'created_at', 'updated_at')
+        fields = ('id', 'author', 'title', 'content', 'image', 'category', 'tags', 'created_at', 'updated_at')
 
 
 class CategorySerializer(serializers.ModelSerializer):

@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.exceptions import NotFound
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import Http404
 from .serializers import CreateUpdateBlogSerializer, BlogSerializer, CreateCommentSerializer, TagSerializer, CategorySerializer, CommentSerializer
 from rest_framework import permissions, status
@@ -19,6 +20,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 class CreateUpdateBlog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    parser_classes = (MultiPartParser, FormParser)
 
     def get_object(self, pk=None):
         if pk is not None:

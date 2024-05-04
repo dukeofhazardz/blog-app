@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from rest_framework.test import APIClient
 from .models import Blog, Category, Tag, Comment
 from user_api.models import CustomUser
@@ -14,6 +15,7 @@ from .serializers import (
     CategorySerializer,
     CommentSerializer,
 )
+import os
 
 User = get_user_model()
 
@@ -79,6 +81,7 @@ class TestSerializers(TestCase):
             "author": 1,  # Assuming author ID
             "title": "Test Blog",
             "content": "This is a test blog content",
+            "image": "/media/default.jpg",
             "category": self.category.id,
             "tags": [self.tag1.id, self.tag2.id],
             "created_at": blog.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
@@ -136,9 +139,11 @@ class TestViews(TestCase):
         self.category = Category.objects.create(name="Test Category")
         self.tag1 = Tag.objects.create(name="Test Tag 1")
         self.tag2 = Tag.objects.create(name="Test Tag 2")
+        default_image_path = os.path.join(settings.MEDIA_ROOT, 'default.jpg')
         self.blog_data = {
             "title": "Test Blog",
             "content": "This is a test blog content",
+            "image": open(default_image_path, 'rb'),
             "category": self.category.name,
             "tags": "#TestTag1 #TestTag2",
         }
@@ -146,7 +151,7 @@ class TestViews(TestCase):
 
     def test_create_blog(self):
         url = reverse("create")
-        response = self.client.post(url, self.blog_data, format="json")
+        response = self.client.post(url, self.blog_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_get_blogs(self):

@@ -1,5 +1,10 @@
 from django.db import models
 from user_api.models import CustomUser
+from django.utils.translation import gettext_lazy as _
+from datetime import datetime
+
+def upload_to(instance, filename):
+    return 'posts/{filename}/{date}'.format(filename=filename, date=datetime.utcnow())
 
 # Create your models here.
 class BaseModel(models.Model):
@@ -28,6 +33,7 @@ class Blog(BaseModel):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=False)
     content = models.TextField(null=False)
+    image = models.ImageField(_("Image"), upload_to=upload_to, default='default.jpg')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     tags = models.ManyToManyField(Tag)
 
