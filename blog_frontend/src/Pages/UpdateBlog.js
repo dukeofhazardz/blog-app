@@ -61,7 +61,11 @@ const UpdateBlog = () => {
     formData.append("content", content);
 
     api
-      .put(`/api/update/${id}/`, formData)
+      .put(`/api/update/${id}/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then(() => {
         setMessage("Blogpost updated");
         setFormError("");

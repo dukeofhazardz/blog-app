@@ -110,12 +110,8 @@ const Tags = () => {
                             "DD MMM YYYY, h:mm A"
                           )}
                         </time>
-                        <Card.Title className="truncate">
-                          {blog.title}
-                        </Card.Title>
-                        <Card.Text className="truncate">
-                          {blog.content}
-                        </Card.Text>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text>{blog.content}</Card.Text>
                         <a
                           href={`/blog-details/${blog.id}`}
                           className="btn btn-primary"

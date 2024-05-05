@@ -30,11 +30,15 @@ const Login = () => {
     }
 
     api
-      .post("/api/login", {
+      .post("/api/token/", {
         email: email,
         password: password,
       })
-      .then(function (res) {
+      .then((res) => {
+        localStorage.setItem("access_token", res.data.access);
+        localStorage.setItem("refresh_token", res.data.refresh);
+        api.defaults.headers["Authorization"] =
+          "JWT " + localStorage.getItem("access_token");
         setError("");
         setEmail("");
         setPassword("");

@@ -1,19 +1,12 @@
-from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
+from .serializers import UserRegisterSerializer,  UserSerializer
 from rest_framework import permissions, status
-from .validations import custom_validation, validate_email, validate_password
+from .validations import custom_validation
 from .models import CustomUser
-
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-
-    def enforce_csrf(self, request):
-        return
 
 
 class UserRegister(APIView):
@@ -28,32 +21,22 @@ class UserRegister(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLogin(APIView):
-	permission_classes = (permissions.AllowAny,)
-	authentication_classes = (SessionAuthentication,)
-	##
-	def post(self, request):
-		data = request.data
-		assert validate_email(data)
-		assert validate_password(data)
-		serializer = UserLoginSerializer(data=data)
-		if serializer.is_valid(raise_exception=True):
-			user = serializer.check_user(data)
-			login(request, user)
-			return Response(serializer.data, status=status.HTTP_200_OK)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserLogout(APIView):
 	permission_classes = (permissions.AllowAny,)
 	authentication_classes = ()
 	def post(self, request):
-		logout(request)
-		return Response(status=status.HTTP_200_OK)
-	
+		try:
+			refresh_token = request.data.get("refresh_token")
+			token = RefreshToken(refresh_token)
+			token.blacklist()
+			return Response(status=status.HTTP_205_RESET_CONTENT)
+		except Exception as e:
+			print(e)
+			return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class PasswordReset(APIView):
 	permission_classes = (permissions.IsAuthenticated,)
-	authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 	##
  
 	def get_object(self, pk=None):
@@ -74,15 +57,14 @@ class PasswordReset(APIView):
 
 class UserView(APIView):
 	permission_classes = (permissions.IsAuthenticated,)
-	authentication_classes = (SessionAuthentication,)
 	##
 	def get(self, request):
 		serializer = UserSerializer(request.user)
 		return Response({'user': serializer.data}, status=status.HTTP_200_OK)
-	
+
+
 class UserByIDView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
 
     def get(self, request, user_id):
         user = get_object_or_404(CustomUser, id=user_id)

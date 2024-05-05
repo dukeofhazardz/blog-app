@@ -22,37 +22,46 @@ const MyNav = () => {
   }, []);
 
   function logOut() {
-    api.post("/api/logout").then(function (res) {
-      setCurrentUser(null);
-      navigate("/login", { state: { message: "Logout successful" } });
+    api.post("/api/logout", {
+      refresh_token: localStorage.getItem("refresh_token"),
     });
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    api.defaults.headers["Authorization"] = null;
+    setCurrentUser(null);
+    navigate("/login", { state: { message: "Logout successful" } });
   }
 
   return (
     <Navbar bg="light" expand="lg" sticky="top">
       <Container>
         <Navbar.Brand href="/home">Blogsite</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Nav className="justify-content-end" activeKey={location.pathname}>
-          {currentUser ? (
-            <>
-              <Nav.Link href="/home">Home</Nav.Link>
-              <Nav.Link href="/profile">Profile</Nav.Link>
-              <Nav.Link href="/tags">Tags</Nav.Link>
-              <Nav.Link href="/categories">Categories</Nav.Link>
-              <Nav.Link href="/create-blog">Create Blog</Nav.Link>
-              <Nav.Link onClick={() => logOut()}>Log out</Nav.Link>
-              <Navbar.Text>
-                Signed in as: {currentUser.first_name} {currentUser.last_name}
-              </Navbar.Text>
-            </>
-          ) : (
-            <>
-              <Nav.Link href="/register">Register</Nav.Link>
-              <Nav.Link href="/login">Login</Nav.Link>
-            </>
-          )}
-        </Nav>
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          className="custom-navbar-toggle"
+        />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="justify-content-end" activeKey={location.pathname}>
+            {currentUser ? (
+              <>
+                <Nav.Link href="/home">Home</Nav.Link>
+                <Nav.Link href="/profile">Profile</Nav.Link>
+                <Nav.Link href="/tags">Tags</Nav.Link>
+                <Nav.Link href="/categories">Categories</Nav.Link>
+                <Nav.Link href="/create-blog">Create Blog</Nav.Link>
+                <Nav.Link onClick={() => logOut()}>Log out</Nav.Link>
+                <Navbar.Text>
+                  Signed in as: {currentUser.first_name} {currentUser.last_name}
+                </Navbar.Text>
+              </>
+            ) : (
+              <>
+                <Nav.Link href="/register">Register</Nav.Link>
+                <Nav.Link href="/login">Login</Nav.Link>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );

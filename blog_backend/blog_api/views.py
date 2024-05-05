@@ -1,4 +1,3 @@
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
@@ -19,7 +18,6 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class CreateUpdateBlog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     parser_classes = (MultiPartParser, FormParser)
 
     def get_object(self, pk=None):
@@ -50,7 +48,6 @@ class CreateUpdateBlog(APIView):
 
 class DeleteBlog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get_object(self, pk):
         try:
@@ -65,7 +62,6 @@ class DeleteBlog(APIView):
 
 class CreateComment(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = CommentSerializer
 
     def get_object(self, pk=None):
@@ -88,7 +84,6 @@ class CreateComment(generics.CreateAPIView):
     
 class GetCommentsByBlog(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -106,7 +101,6 @@ class GetCommentsByBlog(generics.ListAPIView):
     
 class BlogView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
 
     def get(self, request, pk=None):
         if pk is not None:
@@ -125,7 +119,6 @@ class BlogView(APIView):
 
 class GetCategories(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
 
     def get(self, request):
         categories = Category.objects.all()
@@ -134,7 +127,6 @@ class GetCategories(APIView):
 
 class GetTags(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
 
     def get(self, request):
         tags = Tag.objects.all()
@@ -169,7 +161,6 @@ class GetBlogsByTag(generics.ListAPIView):
 class GetBlogsByAuthor(generics.ListAPIView):
     serializer_class = BlogSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
 
     def get_queryset(self):
         author_id = self.kwargs.get('author_id')

@@ -41,6 +41,10 @@
   text-decoration: underline;
 }
 
+.custom-navbar-toggle {
+  color: #f64b4b;
+}
+
 /* End of My Navbar */
 
 /* Forms */
@@ -352,6 +356,9 @@
   margin: 0 0 10px;
   color: #f64b4b;
   font-size: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .blog-block .card-title a:hover {
