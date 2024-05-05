@@ -33,7 +33,6 @@
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.show {
   color: #f64b4b;
-  text-decoration: underline;
 }
 
 .nav-link:hover {
