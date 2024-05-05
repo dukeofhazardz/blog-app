@@ -9,13 +9,13 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
-import blogImg from "../assets/images/img9.jpg";
 import moment from "moment";
 import api from "../api";
 
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState("");
   const [formError, setFormError] = useState("");
@@ -55,17 +55,31 @@ const CreateBlog = () => {
       return;
     }
 
+    const formData = new FormData();
+
+    // Check if image is provided and is an image file
+    if (image && image.type && !image.type.startsWith("image")) {
+      setFormError("Please provide a valid image file");
+      return;
+    }
+
+    // Check if image is provided and is an image file
+    if (image && image.type && image.type.startsWith("image")) {
+      formData.append("image", image);
+    }
+
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("category", category);
+    formData.append("tags", tags);
+
     api
-      .post(`/api/create`, {
-        title: title,
-        content: content,
-        category: category,
-        tags: tags,
-      })
+      .post(`/api/create`, formData)
       .then(() => {
         setFormError("");
         setTitle("");
         setContent("");
+        setImage("");
         setCategory("");
         setTags("");
         setMessage("Blogpost created successfully");
@@ -138,6 +152,19 @@ const CreateBlog = () => {
             </Row>
             <Row>
               <Col sm={12}>
+                <Form.Group>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      setImage(e.target.files[0]);
+                    }}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
                 <Form.Control
                   as="textarea"
                   placeholder="Write your blogpost"
@@ -177,14 +204,16 @@ const CreateBlog = () => {
                 <Col sm={4} key={blog.id}>
                   <div className="holder">
                     <Card>
-                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Img variant="top" src={blog.image} />
                       <Card.Body>
                         <time>
                           {moment(blog.created_at).format(
                             "DD MMM YYYY, h:mm A"
                           )}
                         </time>
-                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Title className="truncate">
+                          {blog.title}
+                        </Card.Title>
                         <Card.Text className="truncate">
                           {blog.content}
                         </Card.Text>

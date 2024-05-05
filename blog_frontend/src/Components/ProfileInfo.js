@@ -10,16 +10,12 @@ function ProfileInfo() {
     api
       .get("/api/user")
       .then(function (res) {
-        console.log(res.data.user);
         setCurrentUser(res.data.user);
       })
       .catch(function (error) {
-        console.log(error);
         setCurrentUser(null);
       });
   }, []);
-
-  console.log(currentUser);
 
   return (
     <Container fluid>

@@ -11,7 +11,6 @@ import Carousel from "react-bootstrap/Carousel";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
-import blogImg from "../assets/images/img9.jpg";
 import moment from "moment";
 import api from "../api";
 
@@ -23,6 +22,7 @@ const BlogDetails = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+  const baseURL = "http://127.0.0.1:8000/";
 
   useEffect(() => {
     // Fetch the current user data
@@ -122,7 +122,7 @@ const BlogDetails = () => {
           </div>
           <Row>
             <Col sm={6}>
-              <Image src={blogImg} />
+              <Image src={baseURL + blog.image} />
             </Col>
             <Col sm={6}>
               <Card>

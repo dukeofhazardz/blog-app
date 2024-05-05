@@ -13,6 +13,7 @@ import api from "../api";
 const UpdateBlog = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
   const [message, setMessage] = useState("");
   const [formError, setFormError] = useState("");
   const { id } = useParams();
@@ -20,10 +21,19 @@ const UpdateBlog = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/api/user").catch(function (error) {
-      navigate("/login");
-    });
-  }, [navigate]);
+    api
+      .get("/api/user")
+      .then(() => {
+        return api.get(`/api/blog/${id}/`);
+      })
+      .then((res) => {
+        setTitle(res.data.title);
+        setContent(res.data.content);
+      })
+      .catch(function (error) {
+        navigate("/login");
+      });
+  }, [navigate, id]);
 
   function updateBlog(e) {
     e.preventDefault();
@@ -34,16 +44,30 @@ const UpdateBlog = () => {
       return;
     }
 
+    const formData = new FormData();
+
+    // Check if image is provided and is an image file
+    if (image && image.type && !image.type.startsWith("image")) {
+      setFormError("Please provide a valid image file");
+      return;
+    }
+
+    // Check if image is provided and is an image file
+    if (image && image.type && image.type.startsWith("image")) {
+      formData.append("image", image);
+    }
+
+    formData.append("title", title);
+    formData.append("content", content);
+
     api
-      .put(`/api/update/${id}/`, {
-        title: title,
-        content: content,
-      })
+      .put(`/api/update/${id}/`, formData)
       .then(() => {
         setMessage("Blogpost updated");
         setFormError("");
         setTitle("");
         setContent("");
+        setImage("");
         navigate("/profile");
       })
       .catch((error) => {
@@ -70,6 +94,19 @@ const UpdateBlog = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <Form.Group>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      setImage(e.target.files[0]);
+                    }}
+                  />
+                </Form.Group>
               </Col>
             </Row>
             <Row>

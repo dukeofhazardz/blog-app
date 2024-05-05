@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import MyNav from "../Components/Navbar";
 import AppFooter from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
-import blogImg from "../assets/images/img9.jpg";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -110,14 +109,16 @@ const Category = () => {
                 <Col sm={4} key={blog.id}>
                   <div className="holder">
                     <Card>
-                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Img variant="top" src={blog.image} />
                       <Card.Body>
                         <time>
                           {moment(blog.created_at).format(
                             "DD MMM YYYY, h:mm A"
                           )}
                         </time>
-                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Title className="truncate">
+                          {blog.title}
+                        </Card.Title>
                         <Card.Text className="truncate">
                           {blog.content}
                         </Card.Text>

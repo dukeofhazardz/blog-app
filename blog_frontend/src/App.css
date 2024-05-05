@@ -112,6 +112,7 @@
   margin: 0 0 60px;
 }
 
+
 /* Update Blog Form */
 .update-block {
   position: relative;
@@ -629,6 +630,7 @@ ul,
   font-size: 15px;
 }
 
+input[type=file],
 input[type=text],
 input[type=email],
 input[type=tel],

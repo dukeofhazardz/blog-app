@@ -77,7 +77,7 @@ const Register = () => {
         </Container>
         <div className="center">
           <Form onSubmit={(e) => submitRegistration(e)}>
-            <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Group className="mb-3" controlId="formBasicFirstName">
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="name"
@@ -86,7 +86,7 @@ const Register = () => {
                 onChange={(e) => setFirstName(e.target.value)}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Group className="mb-3" controlId="formBasicLastName">
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="name"

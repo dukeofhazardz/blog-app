@@ -7,13 +7,13 @@ import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import blogImg from "../assets/images/img9.jpg";
 import moment from "moment";
 import api from "../api";
 
 const Home = () => {
   const [allBlogs, setallBlogs] = useState([]);
   const navigate = useNavigate();
+  const baseURL = "http://127.0.0.1:8000/";
 
   useEffect(() => {
     // Fetch the current user data
@@ -52,14 +52,16 @@ const Home = () => {
                 <Col sm={4} key={blog.id}>
                   <div className="holder">
                     <Card>
-                      <Card.Img variant="top" src={blogImg} />
+                      <Card.Img variant="top" src={baseURL + blog.image} />
                       <Card.Body>
                         <time>
                           {moment(blog.created_at).format(
                             "DD MMM YYYY, h:mm A"
                           )}
                         </time>
-                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Title className="truncate">
+                          {blog.title}
+                        </Card.Title>
                         <Card.Text className="truncate">
                           {blog.content}
                         </Card.Text>
