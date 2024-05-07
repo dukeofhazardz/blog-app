@@ -7,13 +7,6 @@ from django.http import Http404
 from .serializers import CreateUpdateBlogSerializer, BlogSerializer, CreateCommentSerializer, TagSerializer, CategorySerializer, CommentSerializer
 from rest_framework import permissions, status
 from .models import Blog, Category, Tag, Comment
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
-
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-
-    def enforce_csrf(self, request):
-        return
 
 
 class CreateUpdateBlog(APIView):
@@ -100,7 +93,7 @@ class GetCommentsByBlog(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class BlogView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, pk=None):
         if pk is not None:
