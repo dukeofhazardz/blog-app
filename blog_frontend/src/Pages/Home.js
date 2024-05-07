@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import MyNav from "../Components/Navbar";
 import AppHero from "../Components/Hero";
 import AppFooter from "../Components/Footer";
-import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -12,15 +11,7 @@ import api from "../api";
 
 const Home = () => {
   const [allBlogs, setallBlogs] = useState([]);
-  const navigate = useNavigate();
   const baseURL = "http://127.0.0.1:8000/";
-
-  useEffect(() => {
-    // Fetch the current user data
-    api.get("/api/user").catch(function (error) {
-      navigate("/login");
-    });
-  }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
