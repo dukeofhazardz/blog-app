@@ -76,7 +76,7 @@ class CreateComment(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class GetCommentsByBlog(generics.ListAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -153,7 +153,7 @@ class GetBlogsByTag(generics.ListAPIView):
 
 class GetBlogsByAuthor(generics.ListAPIView):
     serializer_class = BlogSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         author_id = self.kwargs.get('author_id')

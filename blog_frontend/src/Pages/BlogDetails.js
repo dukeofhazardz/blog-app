@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MyNav from "../Components/Navbar";
 import AppFooter from "../Components/Footer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -15,21 +15,26 @@ import moment from "moment";
 import api from "../api";
 
 const BlogDetails = () => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [blog, setBlog] = useState({});
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
   const [commentError, setCommentError] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
   const { id } = useParams();
   const baseURL = "http://127.0.0.1:8000/";
 
   useEffect(() => {
     // Fetch the current user data
-    api.get("/api/user").catch(function (error) {
-      navigate("/login");
-    });
-  }, [navigate]);
+    api
+      .get("/api/user")
+      .then((res) => {
+        setCurrentUser(res.data.user);
+      })
+      .catch((error) => {
+        console.log("Not Authenticated");
+      });
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,32 +158,48 @@ const BlogDetails = () => {
             <h2>Comment</h2>
             <div className="subtitle">engage with this post</div>
           </div>
-          <Form className="comment-form" onSubmit={(e) => submitComment(e)}>
-            <Row>
-              <Col sm={12}>
-                <Form.Control
-                  as="textarea"
-                  placeholder="Enter your comment here"
-                  required
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
+          {currentUser ? (
+            <Form className="comment-form" onSubmit={(e) => submitComment(e)}>
+              <Row>
+                <Col sm={12}>
+                  <Form.Control
+                    as="textarea"
+                    placeholder="Enter your comment here"
+                    required
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+                </Col>
+              </Row>
+              {commentError && (
+                <Alert key="danger" variant="danger">
+                  {commentError}
+                </Alert>
+              )}
+              {message && (
+                <Alert key="success" variant="success">
+                  {message}
+                </Alert>
+              )}
+              <div className="btn-holder">
+                <Button type="submit">Submit</Button>
+              </div>
+            </Form>
+          ) : (
+            <Row className="justify-content-center">
+              <Col sm={4}>
+                <div className="center">
+                  <Card
+                    style={{ width: "60rem" }}
+                    border="warning"
+                    className="text-center"
+                  >
+                    <Card.Body>Sign in to comment on this post.</Card.Body>
+                  </Card>
+                </div>
               </Col>
             </Row>
-            {commentError && (
-              <Alert key="danger" variant="danger">
-                {commentError}
-              </Alert>
-            )}
-            {message && (
-              <Alert key="success" variant="success">
-                {message}
-              </Alert>
-            )}
-            <div className="btn-holder">
-              <Button type="submit">Submit</Button>
-            </div>
-          </Form>
+          )}
         </Container>
       </section>
 

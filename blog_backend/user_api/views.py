@@ -64,7 +64,7 @@ class UserView(APIView):
 
 
 class UserByIDView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, user_id):
         user = get_object_or_404(CustomUser, id=user_id)
